@@ -104,16 +104,50 @@ function App() {
     }
   };
 
-  // Update student
-  const handleUpdateStudent = async (id, field, value) => {
+  // Update student helper removed (we now support editing all fields at once)
+
+  // Edit all editable fields (name, age, grade, marks)
+  const handleEditAll = async (student) => {
     try {
-      const updateData = {
-        [field]:
-          field === "id" || field === "age" || field === "marks"
-            ? parseInt(value)
-            : value,
-      };
-      await axios.put(`${API_BASE_URL}/students/${id}`, updateData);
+      const updateData = {};
+
+      const newName = prompt("Update Name:", student.name);
+      if (newName !== null) {
+        const trimmed = newName.trim();
+        if (trimmed && trimmed !== student.name) updateData.name = trimmed;
+      }
+
+      const newAge = prompt("Update Age:", String(student.age));
+      if (newAge !== null) {
+        const num = parseInt(newAge, 10);
+        if (!isNaN(num) && num > 0 && num <= 150 && num !== student.age) {
+          updateData.age = num;
+        }
+      }
+
+      const newGrade = prompt("Update Grade (A-F):", String(student.grade));
+      if (newGrade !== null) {
+        const g = String(newGrade).trim().toUpperCase();
+        const allowed = ["A", "B", "C", "D", "E", "F"];
+        if (allowed.includes(g) && g !== student.grade) {
+          updateData.grade = g;
+        }
+      }
+
+      const newMarks = prompt("Update Marks (0-100):", String(student.marks));
+      if (newMarks !== null) {
+        const m = parseInt(newMarks, 10);
+        if (!isNaN(m) && m >= 0 && m <= 100 && m !== student.marks) {
+          updateData.marks = m;
+        }
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        showMessage("No changes made.", "info");
+        return;
+      }
+
+      await axios.put(`${API_BASE_URL}/students/${student.id}`, updateData);
       showMessage("Student updated successfully!", "success");
       fetchStudents();
     } catch (error) {
@@ -244,14 +278,7 @@ function App() {
                     <div className="student-actions">
                       <button
                         className="action-btn edit"
-                        onClick={() => {
-                          const newValue = prompt(
-                            `Update ${student.name}'s marks:`,
-                            student.marks
-                          );
-                          if (newValue)
-                            handleUpdateStudent(student.id, "marks", newValue);
-                        }}
+                        onClick={() => handleEditAll(student)}
                       >
                         <Edit size={14} />
                         Edit
