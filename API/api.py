@@ -10,7 +10,7 @@ app = FastAPI(title="Student Management API")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8000","https://smart-student-management-system.vercel.app"],
+    allow_origins=["http://localhost:5173", "smart-student-management-system.vercel.app","http://localhost:8000","https://smart-student-management-system.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
